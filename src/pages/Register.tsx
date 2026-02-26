@@ -46,7 +46,7 @@ const Register = () => {
     e.preventDefault();
     if (!validate()) return;
     toast.success("Account created! Welcome to EarnMedia 🎉");
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const inputClass =
