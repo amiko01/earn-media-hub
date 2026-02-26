@@ -15,7 +15,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/earn-media-hub">
         <Routes>
           <Route path="/" element={<Register />} />
           <Route path="/dashboard" element={<Index />} />
