@@ -28,7 +28,7 @@ const Login = () => {
     e.preventDefault();
     if (!validate()) return;
     toast.success("Welcome back! 👋");
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const inputClass =
