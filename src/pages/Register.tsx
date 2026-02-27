@@ -3,11 +3,13 @@ import { User, Mail, Phone, Lock, Eye, EyeOff, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -42,9 +44,29 @@ const Register = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setSubmitting(true);
+
+    const { error } = await supabase.auth.signUp({
+      email: form.email.trim(),
+      password: form.password,
+      options: {
+        data: {
+          full_name: form.name.trim(),
+          referral_code: form.referral.trim() || undefined,
+        },
+      },
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     toast.success("Account created! Welcome to EarnMedia 🎉");
     navigate("/dashboard");
   };
@@ -70,13 +92,7 @@ const Register = () => {
           <div>
             <div className="relative">
               <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={inputClass}
-                placeholder="Full Name"
-                value={form.name}
-                onChange={(e) => update("name", e.target.value)}
-                maxLength={100}
-              />
+              <input className={inputClass} placeholder="Full Name" value={form.name} onChange={(e) => update("name", e.target.value)} maxLength={100} />
             </div>
             {errors.name && <p className="text-xs text-destructive mt-1 ml-1">{errors.name}</p>}
           </div>
@@ -85,14 +101,7 @@ const Register = () => {
           <div>
             <div className="relative">
               <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={inputClass}
-                placeholder="Email Address"
-                type="email"
-                value={form.email}
-                onChange={(e) => update("email", e.target.value)}
-                maxLength={255}
-              />
+              <input className={inputClass} placeholder="Email Address" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} />
             </div>
             {errors.email && <p className="text-xs text-destructive mt-1 ml-1">{errors.email}</p>}
           </div>
@@ -101,13 +110,7 @@ const Register = () => {
           <div>
             <div className="relative">
               <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={inputClass}
-                placeholder="Phone Number"
-                value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                maxLength={20}
-              />
+              <input className={inputClass} placeholder="Phone Number" value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={20} />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground italic">Optional</span>
             </div>
             {errors.phone && <p className="text-xs text-destructive mt-1 ml-1">{errors.phone}</p>}
@@ -116,27 +119,14 @@ const Register = () => {
           {/* Referral Code */}
           <div className="relative">
             <Gift size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              className={inputClass}
-              placeholder="Referral Code"
-              value={form.referral}
-              onChange={(e) => update("referral", e.target.value)}
-              maxLength={30}
-            />
+            <input className={inputClass} placeholder="Referral Code" value={form.referral} onChange={(e) => update("referral", e.target.value)} maxLength={30} />
           </div>
 
           {/* Password */}
           <div>
             <div className="relative">
               <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={inputClass}
-                placeholder="Password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
-                maxLength={128}
-              />
+              <input className={inputClass} placeholder="Password" type={showPassword ? "text" : "password"} value={form.password} onChange={(e) => update("password", e.target.value)} maxLength={128} />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -148,14 +138,7 @@ const Register = () => {
           <div>
             <div className="relative">
               <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={inputClass}
-                placeholder="Confirm Password"
-                type={showConfirm ? "text" : "password"}
-                value={form.confirmPassword}
-                onChange={(e) => update("confirmPassword", e.target.value)}
-                maxLength={128}
-              />
+              <input className={inputClass} placeholder="Confirm Password" type={showConfirm ? "text" : "password"} value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} maxLength={128} />
               <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -165,9 +148,10 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full gold-gradient text-primary-foreground font-bold text-base py-3.5 rounded-2xl mt-2 transition-transform active:scale-[0.98]"
+            disabled={submitting}
+            className="w-full gold-gradient text-primary-foreground font-bold text-base py-3.5 rounded-2xl mt-2 transition-transform active:scale-[0.98] disabled:opacity-60"
           >
-            Sign Up
+            {submitting ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
