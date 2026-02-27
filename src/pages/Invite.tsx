@@ -29,30 +29,39 @@ const Invite = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
-      // Fetch own profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("referral_code, balance, vip_level")
-        .eq("user_id", user.id)
-        .single();
-
-      if (profile) {
-        setReferralCode(profile.referral_code);
-        setBalance(Number(profile.balance));
-        setCurrentVip(profile.vip_level);
-
-        // Count referrals
-        const { count } = await supabase
+      try {
+        // Fetch own profile
+        const { data: profile } = await supabase
           .from("profiles")
-          .select("id", { count: "exact", head: true })
-          .eq("referred_by", profile.referral_code);
+          .select("referral_code, balance, vip_level")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-        setTotalReferrals(count ?? 0);
+        if (profile) {
+          setReferralCode(profile.referral_code);
+          setBalance(Number(profile.balance));
+          setCurrentVip(profile.vip_level);
+
+          // Count referrals
+          const { count } = await supabase
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("referred_by", profile.referral_code);
+
+          setTotalReferrals(count ?? 0);
+        }
+        // If no profile found, defaults (0 values) remain — UI still renders
+      } catch (err) {
+        console.error("Error fetching invite data:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchData();
