@@ -19,7 +19,9 @@ const commissionTable = [
 
 const Invite = () => {
   const { toast } = useToast();
-  const referralLink = "https://earnmedia.app/ref/USER123";
+  const userId = "USER123"; // TODO: replace with real user ID from auth
+  const referralCode = userId;
+  const referralLink = `https://earnmedia.app/ref/${userId}`;
   const totalReferrals = 3;
   const currentVip = 0;
 
@@ -55,10 +57,10 @@ const Invite = () => {
         animate={{ opacity: 1, y: 0 }}
         className="gold-card rounded-3xl p-5 space-y-3"
       >
-        <p className="text-sm font-semibold text-primary-foreground">Your Referral Link</p>
+        <p className="text-sm font-semibold text-primary-foreground">Your Referral Code</p>
         <div className="flex items-center gap-2">
-          <div className="flex-1 bg-primary-foreground/20 rounded-xl px-3 py-2 text-xs text-primary-foreground/80 truncate">
-            {referralLink}
+          <div className="flex-1 bg-primary-foreground/20 rounded-xl px-4 py-3 text-center">
+            <span className="text-lg font-bold tracking-widest text-primary-foreground">{referralCode}</span>
           </div>
           <button
             onClick={handleCopy}
@@ -67,6 +69,7 @@ const Invite = () => {
             <Copy size={16} />
           </button>
         </div>
+        <p className="text-[10px] text-primary-foreground/60 text-center">Copies full link: {referralLink}</p>
       </motion.div>
 
       {/* Commission Table */}
