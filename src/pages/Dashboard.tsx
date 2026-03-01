@@ -1,12 +1,14 @@
-import { Gift, Wallet, TrendingUp, LogOut } from "lucide-react";
+import { Gift, Wallet, TrendingUp, LogOut, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [balance, setBalance] = useState(0);
   const [username, setUsername] = useState("User");
@@ -53,9 +55,16 @@ const Dashboard = () => {
         <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
           Earn<span className="text-primary">Media</span>
         </h1>
-        <button onClick={handleLogout} className="p-2 rounded-full bg-secondary">
-          <LogOut size={18} className="text-muted-foreground" />
-        </button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <button onClick={() => navigate("/admin-panel")} className="p-2 rounded-full bg-primary/20">
+              <Shield size={18} className="text-primary" />
+            </button>
+          )}
+          <button onClick={handleLogout} className="p-2 rounded-full bg-secondary">
+            <LogOut size={18} className="text-muted-foreground" />
+          </button>
+        </div>
       </div>
 
       <div>
