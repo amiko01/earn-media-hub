@@ -162,6 +162,10 @@ export type Database = {
         Returns: undefined
       }
       admin_reset_balance: { Args: { p_user_id: string }; Returns: undefined }
+      admin_update_user: {
+        Args: { p_balance: number; p_user_id: string; p_vip_level: number }
+        Returns: undefined
+      }
       complete_task: {
         Args: { p_reward: number; p_task_id: string }
         Returns: Json
