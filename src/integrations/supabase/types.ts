@@ -101,20 +101,84 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_add_bonus: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: undefined
+      }
+      admin_approve_tiktok: {
+        Args: { p_submission_id: string }
+        Returns: undefined
+      }
+      admin_get_stats: { Args: never; Returns: Json }
+      admin_get_tiktok_submissions: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+          username: string
+          video_url: string
+        }[]
+      }
+      admin_get_users: {
+        Args: never
+        Returns: {
+          balance: number
+          commission_earned: number
+          created_at: string
+          email: string
+          referral_code: string
+          user_id: string
+          username: string
+          vip_level: number
+        }[]
+      }
+      admin_reject_tiktok: {
+        Args: { p_submission_id: string }
+        Returns: undefined
+      }
+      admin_reset_balance: { Args: { p_user_id: string }; Returns: undefined }
       complete_task: {
         Args: { p_reward: number; p_task_id: string }
         Returns: Json
       }
       generate_referral_code: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
       submit_tiktok: { Args: { p_url: string }; Returns: Json }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -241,6 +305,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
