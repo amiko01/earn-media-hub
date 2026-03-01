@@ -24,6 +24,7 @@ const Invite = () => {
   const { user } = useAuth();
   const [referralCode, setReferralCode] = useState("");
   const [balance, setBalance] = useState(0);
+  const [commissionEarned, setCommissionEarned] = useState(0);
   const [totalReferrals, setTotalReferrals] = useState(0);
   const [currentVip, setCurrentVip] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ const Invite = () => {
         // Fetch own profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("referral_code, balance, vip_level")
+          .select("referral_code, balance, vip_level, commission_earned")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -47,6 +48,7 @@ const Invite = () => {
           setReferralCode(profile.referral_code);
           setBalance(Number(profile.balance));
           setCurrentVip(profile.vip_level);
+          setCommissionEarned(Number((profile as any).commission_earned ?? 0));
 
           // Count referrals
           const { count } = await supabase
@@ -98,7 +100,7 @@ const Invite = () => {
         </div>
         <div className="bg-[#151515] rounded-2xl p-4 text-center">
           <TrendingUp size={20} className="text-primary mx-auto mb-1" />
-          <p className="text-xl font-bold text-foreground">${balance.toFixed(2)}</p>
+           <p className="text-xl font-bold text-foreground">${commissionEarned.toFixed(2)}</p>
           <p className="text-xs text-muted-foreground">Commission Earned</p>
         </div>
       </div>

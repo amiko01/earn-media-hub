@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import AuthGuard from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -18,10 +19,9 @@ const App = () => (
       <BrowserRouter basename="/earn-media-hub">
         <Routes>
           <Route path="/" element={<Register />} />
-          <Route path="/dashboard" element={<Index />} />
+          <Route path="/dashboard" element={<AuthGuard><Index /></AuthGuard>} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

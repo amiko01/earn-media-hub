@@ -3,10 +3,12 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -24,9 +26,23 @@ const Login = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setSubmitting(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email.trim(),
+      password: form.password,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     toast.success("Welcome back! 👋");
     navigate("/dashboard");
   };
@@ -67,8 +83,12 @@ const Login = () => {
             {errors.password && <p className="text-xs text-destructive mt-1 ml-1">{errors.password}</p>}
           </div>
 
-          <button type="submit" className="w-full gold-gradient text-primary-foreground font-bold text-base py-3.5 rounded-2xl mt-2 transition-transform active:scale-[0.98]">
-            Log In
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full gold-gradient text-primary-foreground font-bold text-base py-3.5 rounded-2xl mt-2 transition-transform active:scale-[0.98] disabled:opacity-60"
+          >
+            {submitting ? "Signing In..." : "Log In"}
           </button>
         </form>
 

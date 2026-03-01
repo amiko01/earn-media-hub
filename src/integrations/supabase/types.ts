@@ -17,6 +17,7 @@ export type Database = {
       profiles: {
         Row: {
           balance: number
+          commission_earned: number
           created_at: string
           id: string
           referral_code: string
@@ -28,6 +29,7 @@ export type Database = {
         }
         Insert: {
           balance?: number
+          commission_earned?: number
           created_at?: string
           id?: string
           referral_code: string
@@ -39,6 +41,7 @@ export type Database = {
         }
         Update: {
           balance?: number
+          commission_earned?: number
           created_at?: string
           id?: string
           referral_code?: string
@@ -50,12 +53,65 @@ export type Database = {
         }
         Relationships: []
       }
+      task_completions: {
+        Row: {
+          created_at: string
+          id: string
+          reward: number
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reward?: number
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reward?: number
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tiktok_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      complete_task: {
+        Args: { p_reward: number; p_task_id: string }
+        Returns: Json
+      }
       generate_referral_code: { Args: never; Returns: string }
+      submit_tiktok: { Args: { p_url: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
